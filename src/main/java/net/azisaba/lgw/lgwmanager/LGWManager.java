@@ -10,7 +10,6 @@ public final class LGWManager extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
-
     }
 
     @Override

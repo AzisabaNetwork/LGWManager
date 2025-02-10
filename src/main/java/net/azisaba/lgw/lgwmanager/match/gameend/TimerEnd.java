@@ -1,11 +1,9 @@
-package net.azisaba.lgw.lgwmanager.GameEnd;
+package net.azisaba.lgw.lgwmanager.match.gameend;
 
 import net.azisaba.lgw.lgwmanager.LGWManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class TimerEnd implements IGameEnd{
     public Duration endTime;

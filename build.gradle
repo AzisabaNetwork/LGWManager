@@ -22,12 +22,17 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT"
     compileOnly 'dev.felnull:BetterGUI:1.0.6-20241203.020728-7@jar'
     compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    implementation 'redis.clients:jedis:5.3.0-beta1'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
 }
 
-def targetJavaVersion = 8
+def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
