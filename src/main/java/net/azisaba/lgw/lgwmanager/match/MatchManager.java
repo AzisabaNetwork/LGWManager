@@ -1,11 +1,11 @@
 package net.azisaba.lgw.lgwmanager.match;
 
 import net.azisaba.lgw.lgwmanager.match.data.KillStreakData;
-import net.azisaba.lgw.lgwmanager.match.equipment.IEquipment;
-import net.azisaba.lgw.lgwmanager.match.gameend.IGameEnd;
+import net.azisaba.lgw.lgwmanager.match.gamemode.equipment.IEquipment;
+import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
 import net.azisaba.lgw.lgwmanager.match.gamemode.GameModeEnum;
 import net.azisaba.lgw.lgwmanager.match.gamemode.IGameMode;
-import net.azisaba.lgw.lgwmanager.match.reward.IReward;
+import net.azisaba.lgw.lgwmanager.match.gamemode.reward.IReward;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

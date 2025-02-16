@@ -1,12 +1,11 @@
 package net.azisaba.lgw.lgwmanager.match.gamemode;
 
-import net.azisaba.lgw.lgwmanager.match.equipment.DefaultEquipment;
-import net.azisaba.lgw.lgwmanager.match.equipment.IEquipment;
-import net.azisaba.lgw.lgwmanager.match.gameend.IGameEnd;
-import net.azisaba.lgw.lgwmanager.match.gameend.TimerEnd;
-import net.azisaba.lgw.lgwmanager.match.MapType;
-import net.azisaba.lgw.lgwmanager.match.reward.IReward;
-import net.azisaba.lgw.lgwmanager.match.reward.KillReward;
+import net.azisaba.lgw.lgwmanager.match.gamemode.equipment.DefaultEquipment;
+import net.azisaba.lgw.lgwmanager.match.gamemode.equipment.IEquipment;
+import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
+import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.TimerEnd;
+import net.azisaba.lgw.lgwmanager.match.gamemode.reward.IReward;
+import net.azisaba.lgw.lgwmanager.match.gamemode.reward.KillReward;
 
 import java.time.Duration;
 import java.util.Arrays;

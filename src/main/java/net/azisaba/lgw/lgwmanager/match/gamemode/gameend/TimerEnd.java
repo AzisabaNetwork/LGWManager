@@ -1,6 +1,7 @@
-package net.azisaba.lgw.lgwmanager.match.gameend;
+package net.azisaba.lgw.lgwmanager.match.gamemode.gameend;
 
 import net.azisaba.lgw.lgwmanager.LGWManager;
+import net.azisaba.lgw.lgwmanager.match.data.MatchData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
@@ -12,12 +13,12 @@ public class TimerEnd implements IGameEnd{
         this.endTime = endTime;
     }
 
-    public void startTimer(){
+    public void startTimer(MatchData matchData){
         long ticks = endTime.getSeconds() * 20;
         new BukkitRunnable() {
             @Override
             public void run() {
-                endMatch();
+                endMatch(matchData);
             }
         }.runTaskLater(LGWManager.INSTANCE, ticks);
     }

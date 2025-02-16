@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 group = 'com.sysnote8'
-version = '1.0-SNAPSHOT'
+version = '1.0-ULTRASOUL-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -19,14 +20,26 @@ repositories {
         name = "net.azisaba"
         url = "https://repo.azisaba.net/repository/maven-public/"
     }
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-releases/")
+    }
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 dependencies {
+    def scoreboardLibraryVersion = "2.2.2"
+    implementation 'net.kyori:adventure-api:4.18.0'
+    implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
+    runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
+    runtimeOnly("net.megavex:scoreboard-library-packetevents:$scoreboardLibraryVersion")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
     compileOnly "io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT"
     compileOnly 'dev.felnull:BetterGUI:1.0.6-20241203.020728-7@jar'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    implementation 'redis.clients:jedis:5.3.0-beta1'
+    implementation 'io.lettuce:lettuce-core:6.5.3.RELEASE'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.36'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
@@ -57,4 +70,8 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+}
+shadowJar {
+    archiveClassifier.set("") // jar名を「-all」じゃなくする
+    relocate 'net.megavex.scoreboardlibrary', 'net.azisaba.shadowed.scoreboardlibrary'
 }

@@ -1,4 +1,4 @@
-package net.azisaba.lgw.lgwmanager.match.equipment;
+package net.azisaba.lgw.lgwmanager.match.gamemode.equipment;
 
 import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.match.BattleTeam;

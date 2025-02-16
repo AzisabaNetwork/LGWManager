@@ -1,7 +1,7 @@
 package net.azisaba.lgw.lgwmanager.match.data;
 
 import net.azisaba.lgw.lgwmanager.match.BattleTeam;
-import net.azisaba.lgw.lgwmanager.match.MapType;
+import net.azisaba.lgw.lgwmanager.match.gamemode.MapType;
 import net.azisaba.lgw.lgwmanager.util.Pair;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;

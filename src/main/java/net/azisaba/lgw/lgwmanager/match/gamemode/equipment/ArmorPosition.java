@@ -1,4 +1,4 @@
-package net.azisaba.lgw.lgwmanager.match.equipment;
+package net.azisaba.lgw.lgwmanager.match.gamemode.equipment;
 
 public enum ArmorPosition {
 

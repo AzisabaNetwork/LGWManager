@@ -1,4 +1,4 @@
-package net.azisaba.lgw.lgwmanager.match.gameend;
+package net.azisaba.lgw.lgwmanager.match.gamemode.gameend;
 
 public class KillPointEnd implements IGameEnd{
 
