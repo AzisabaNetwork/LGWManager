@@ -4,11 +4,13 @@ import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.api.RedisManager;
 import net.azisaba.lgw.lgwmanager.listener.LoginListener;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.ScoreBoardManager;
+import net.kyori.adventure.text.Component;
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary;
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException;
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary;
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,11 +26,17 @@ public final class LGWManager extends JavaPlugin {
     public static Sidebar sidebar;
     @Getter
     public static RedisManager redisManager;
+    @Getter
+    public static boolean isLobby;
+    @Getter
+    public static String serverName;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
         redisManager = new RedisManager();
+        isLobby = INSTANCE.getConfig().getBoolean("isLobby", false);
+        serverName = INSTANCE.getConfig().getString("serverName", "server_dev");
         saveDefaultConfig();
         initScoreboard();
     }
@@ -53,6 +61,9 @@ public final class LGWManager extends JavaPlugin {
         sidebar = scoreboardLibrary.createSidebar();
         ScoreBoardManager scoreBoardManager = new ScoreBoardManager(this, sidebar);
         for(Player p : Bukkit.getOnlinePlayers()){
+            if(p.hasMetadata("NPC")){
+                continue;
+            }
             sidebar.addPlayer(p);
         }
         //ScoreBoardのtick処理呼び出し

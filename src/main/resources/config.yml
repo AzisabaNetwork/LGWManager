@@ -2,5 +2,6 @@
 Redis:
   IP: "localhost"
   Port: "6379"
-  user: []
-  password: []
+  user: null
+  password: null
+  databaseGroup: "lgwm"
