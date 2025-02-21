@@ -30,12 +30,13 @@ repositories {
 
 dependencies {
     def scoreboardLibraryVersion = "2.2.2"
-    implementation 'net.kyori:adventure-api:4.18.0'
+    implementation 'net.kyori:adventure-api:4.19.0'
+    implementation 'net.kyori:adventure-text-minimessage:4.19.0'
     implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
     runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
     runtimeOnly("net.megavex:scoreboard-library-packetevents:$scoreboardLibraryVersion")
     compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
-    compileOnly "io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT"
+    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly 'dev.felnull:BetterGUI:1.0.6-20241203.020728-7@jar'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'

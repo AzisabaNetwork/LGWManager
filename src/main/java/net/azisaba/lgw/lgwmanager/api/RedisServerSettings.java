@@ -1,41 +1,44 @@
 package net.azisaba.lgw.lgwmanager.api;
 
-import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.reactive.RedisReactiveCommands;
 import io.lettuce.core.api.sync.RedisCommands;
-import lombok.Setter;
 import net.azisaba.lgw.lgwmanager.LGWManager;
 import org.bukkit.Bukkit;
 import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class RedisServerSettings {
     StatefulRedisConnection<String, String> connection = LGWManager.getRedisManager().connection;
     RedisReactiveCommands<String, String> reactiveCommands = connection.reactive();
     RedisCommands<String,String> syncCommands = connection.sync();
-    Set<String> serverList = new HashSet<>();
-    @Setter
-    public static String idleServer;
 
     public void setupServer() {
         if(!LGWManager.isLobby) {
-            Mono<Boolean> result = reactiveCommands.hset("servers_status", LGWManager.getServerName().getFirst(), "idle");
-            result.subscribe(success -> {
-                if (success) {
-                    Bukkit.getLogger().info("サーバーをRedisに登録しました");
-                }else {
-                    Bukkit.getLogger().warning("サーバーをRedisに登録することに失敗しました");
+            String serverName = LGWManager.getServerName().getFirst();
+            Mono<String> existingStatus = reactiveCommands.hget("servers_status", serverName);
+            existingStatus.subscribe(status -> {
+                if (status != null) {
+                    Bukkit.getLogger().warning("サーバー名 '" + serverName + "' は既にRedisに登録されています！");
+                } else {
+
+                    Mono<Boolean> result = reactiveCommands.hset("servers_status", serverName, "idle");
+                    result.subscribe(success -> {
+                        if (success) {
+                            Bukkit.getLogger().info("サーバー名をRedisに登録しました");
+                        } else {
+                            Bukkit.getLogger().warning("サーバー名をRedisに登録することに失敗しました");
+                        }
+                    });
                 }
+            }, error -> {
+                Bukkit.getLogger().warning("[RedisServerSettings::setupServer]Redisへの接続中にエラーが発生しました: " + error.getMessage());
             });
         }else {
-            Bukkit.getLogger().info("ロビーサーバーのためRedisに登録しませんでした");
+            Bukkit.getLogger().info("ロビーサーバーのためサーバー名をRedisに登録しませんでした");
         }
+
     }
 
     public void shutdownServer() {
@@ -48,14 +51,16 @@ public class RedisServerSettings {
         return syncCommands.hgetall("servers_status");
     }
 
-    private String getIdleServer() {
+    public String getIdleServer() {
         for(Map.Entry<String, String> entry : getServerList().entrySet()){
             if(entry.getValue().equals("idle")){
+                Bukkit.getLogger().info("試合サーバーが見つかりました: " + entry.getKey());
+                setServerStatus(entry.getKey(), false);
                 return entry.getKey();
             }
         }
+        Bukkit.getLogger().info("現在使用可能な試合サーバーがありません、試合サーバーの増設を検討してください");
         return null;
-
         /* リアクティブとして書こうとした残骸　今後リアクティブを書く時の参考にするために
         リアクティブ:始めから終わりまでいつ終わってもいいときにしか使ってはならない(戒め 例:コマンドの結果表示とかキャッシュとか
 
@@ -78,6 +83,14 @@ public class RedisServerSettings {
             setIdleServer(null);
         });
          */
+    }
+
+    public void setServerStatus(String serverName, boolean isIdle){
+        if(isIdle) {
+            reactiveCommands.hset("servers_status", serverName, "idle").subscribe();
+        }else {
+            reactiveCommands.hset("servers_status", serverName, "busy").subscribe();
+        }
     }
 
     public void setServerStatus(boolean isIdle){
