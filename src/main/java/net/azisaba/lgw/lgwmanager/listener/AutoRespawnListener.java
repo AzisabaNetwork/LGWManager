@@ -13,16 +13,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 //LeonGunWarあるうちはいらない
 public class AutoRespawnListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onDeath(PlayerDeathEvent e) {
-        Player deader = e.getEntity();
-
-        Bukkit.getScheduler().runTask(LGWManager.INSTANCE, () -> {
-            // リスポーン
-            deader.spigot().respawn();
-        });
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();

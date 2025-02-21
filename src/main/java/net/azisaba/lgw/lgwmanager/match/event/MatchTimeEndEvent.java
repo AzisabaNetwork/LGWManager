@@ -12,10 +12,10 @@ import org.bukkit.event.HandlerList;
 public class MatchTimeEndEvent extends Event {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
-    public final MatchData matchData;
+    public final MatchManager matchManager;
 
     public MatchTimeEndEvent(MatchManager matchManager) {
-        this.matchData = matchData;
+        this.matchManager = matchManager;
     }
 
     @Override
