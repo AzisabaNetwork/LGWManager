@@ -2,18 +2,20 @@ package net.azisaba.lgw.lgwmanager;
 
 import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.api.RedisManager;
+import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
 import net.azisaba.lgw.lgwmanager.listener.LoginListener;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.ScoreBoardManager;
-import net.kyori.adventure.text.Component;
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary;
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException;
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary;
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.felnull.bettergui.BetterGUI.plugin;
 
@@ -29,16 +31,20 @@ public final class LGWManager extends JavaPlugin {
     @Getter
     public static boolean isLobby;
     @Getter
-    public static String serverName;
+    public static LinkedList<String> serverName = new LinkedList<>();
+    @Getter
+    public static RedisServerSettings serverSettings;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
         redisManager = new RedisManager();
         isLobby = INSTANCE.getConfig().getBoolean("isLobby", false);
-        serverName = INSTANCE.getConfig().getString("serverName", "server_dev");
+        serverName.addFirst(INSTANCE.getConfig().getString("ServerName", "server_dev"));
         saveDefaultConfig();
         initScoreboard();
+        serverSettings = new RedisServerSettings();
+        serverSettings.setupServer();
     }
 
     @Override

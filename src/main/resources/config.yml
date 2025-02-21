@@ -5,3 +5,4 @@ Redis:
   user: null
   password: null
   databaseGroup: "lgwm"
+ServerName: "server_dev"

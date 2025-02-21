@@ -54,6 +54,7 @@ public class RedisManager {
     }
 
     public void shutdownRedis() {
+        LGWManager.getServerSettings().shutdownServer();
         if(this.connection != null){
             connection.close();
         }
