@@ -1,5 +1,6 @@
 package net.azisaba.lgw.lgwmanager;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.api.RedisManager;
 import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
@@ -13,11 +14,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static dev.felnull.bettergui.BetterGUI.plugin;
+
 
 public final class LGWManager extends JavaPlugin {
     @Getter
@@ -78,6 +81,11 @@ public final class LGWManager extends JavaPlugin {
             public void run() {
                 scoreBoardManager.tick();
             }
-        }.runTaskTimer(this, 0, 1);
+        }.runTaskTimer(this, 0, 2);
     }
+
+    public void leaveLobbyScoreBoard(Player p){
+        getSidebar().removePlayer(p);
+    }
+
 }

@@ -24,7 +24,7 @@ public class DefaultEquipment implements IEquipment{
         EnumMap<BattleTeam, EnumMap<ArmorPosition, ItemStack>> teamArmor = new EnumMap<>(BattleTeam.class);
 
         for(BattleTeam team : BattleTeam.values()){
-            armorItemStack.put(ArmorPosition.CHEST_PLATE, getTeamChestplate(team));
+            armorItemStack.put(ArmorPosition.CHEST_PLATE, getTeamChestPlate(team));
             teamArmor.put(team, armorItemStack);
         }
 
@@ -32,7 +32,8 @@ public class DefaultEquipment implements IEquipment{
     }
 
     // チームの色付きチェストプレート！！
-    public static ItemStack getTeamChestplate(BattleTeam team) {
+    @Override
+    public ItemStack getTeamChestPlate(BattleTeam team) {
         ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
         meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', team.getTeamName())));

@@ -10,13 +10,13 @@ import java.util.*;
 
 public class MapData {
 
-    String mapName;
-    Component mapDisplayName;
+    public String mapName;
+    public Component mapDisplayName;
     //各mapが対応しているゲームモード
-    List<MapType> availableMapType;
-    Map<BattleTeam, Location> spawnPoint = new HashMap<>();
+    public List<MapType> availableMapType;
+    public Map<BattleTeam, Location> spawnPoint = new HashMap<>();
     //コンクエストなどの占領6地点の固有の地点の対角線上にある点
-    Map<String,Pair<Location, Location>> uniquePointSquare;
+    public Map<String,Pair<Location, Location>> uniquePointSquare;
 
     public MapData(String mapName, Component mapDisplayName, List<MapType> availableMapType, Map<BattleTeam, Location> spawnPoint){
         setupMapData(mapName, mapDisplayName, availableMapType, spawnPoint);
