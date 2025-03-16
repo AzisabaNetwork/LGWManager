@@ -22,4 +22,12 @@ public class MatchData {
         this.playerList.put(BattleTeam.BLUE, new HashSet<>());
     }
 
+    public Set<Player> getPlayerList() {
+        Set<Player> playerSet = new HashSet<>();
+        for(BattleTeam team : BattleTeam.values()){
+            playerSet.addAll(this.playerList.get(team));
+        }
+        return playerSet;
+    }
+
 }

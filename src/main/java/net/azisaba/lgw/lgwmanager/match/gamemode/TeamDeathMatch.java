@@ -4,7 +4,6 @@ import net.azisaba.lgw.lgwmanager.match.BattleTeam;
 import net.azisaba.lgw.lgwmanager.match.MatchManager;
 import net.azisaba.lgw.lgwmanager.match.data.MapData;
 import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
-import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.TimerEnd;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +29,6 @@ public class TeamDeathMatch implements IGameMode{
                 matchJoinPlayer(player, spawn, teamChestPlate);
             }
         }
-
     }
 
     public void matchJoinPlayer(Player player, Location spawn, ItemStack teamChestPlate) {
