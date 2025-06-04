@@ -30,4 +30,8 @@ public class MatchData {
         return playerSet;
     }
 
+    public Set<Player> getTeamPlayerList(BattleTeam battleTeam) {
+        return this.playerList.get(battleTeam);
+    }
+
 }

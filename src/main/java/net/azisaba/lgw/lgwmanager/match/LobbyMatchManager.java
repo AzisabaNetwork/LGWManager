@@ -40,6 +40,16 @@ public class LobbyMatchManager {
     private void initStartMatch(String idleServer){
         RedisServerSettings redisServerSettings = LGWManager.getServerSettings();
         this.matchServer = idleServer;
-        //todo:マッチデータをredisに登録する処理を書かねば
+
+        // Redisにマッチ情報を登録（例：match:pending:{serverName}）
+        String key = "match:pending:" + idleServer;
+        String matchData = "type=DEFAULT;timestamp=" + System.currentTimeMillis(); // 必要な情報を整形して格納
+        LGWManager.getRedisManager().connection.sync().set(key, matchData);
+
+        // RedisのPub/Subで試合開始を通知（チャンネル：match:start）
+        LGWManager.getRedisManager().connection.sync().publish("match:start", idleServer);
+
+        // あとでプレイヤー移動処理などもここに追加する
+        Bukkit.getLogger().info("試合を " + idleServer + " で開始しました！");
     }
 }
