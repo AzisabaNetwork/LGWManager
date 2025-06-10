@@ -6,6 +6,7 @@ import net.azisaba.lgw.lgwmanager.api.RedisManager;
 import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
 import net.azisaba.lgw.lgwmanager.listener.LoginListener;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.ScoreBoardManager;
+import net.azisaba.lgw.lgwmanager.match.MatchManager;
 import net.azisaba.lgw.lgwmanager.match.data.MapData;
 import net.azisaba.lgw.lgwmanager.match.gamemode.MapType;
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +43,8 @@ public final class LGWManager extends JavaPlugin {
     public static RedisServerSettings serverSettings;
     @Getter
     public static EnumMap<MapType, List<MapData>> mapList;
+    @Getter
+    public static List<MatchManager> matchList = new ArrayList<>();
 
     @Override
     public void onEnable() {

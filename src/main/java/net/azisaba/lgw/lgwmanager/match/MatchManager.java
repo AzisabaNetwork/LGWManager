@@ -1,15 +1,14 @@
 package net.azisaba.lgw.lgwmanager.match;
 
+import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.LGWManager;
 import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.IMatchScoreBoard;
 import net.azisaba.lgw.lgwmanager.match.data.KillStreakData;
 import net.azisaba.lgw.lgwmanager.match.data.MatchData;
-import net.azisaba.lgw.lgwmanager.match.gamemode.MapType;
+import net.azisaba.lgw.lgwmanager.match.gamemode.*;
 import net.azisaba.lgw.lgwmanager.match.gamemode.equipment.IEquipment;
 import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
-import net.azisaba.lgw.lgwmanager.match.gamemode.GameModeEnum;
-import net.azisaba.lgw.lgwmanager.match.gamemode.IGameMode;
 import net.azisaba.lgw.lgwmanager.match.gamemode.reward.IReward;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,49 +22,55 @@ import java.util.Set;
 
 
 public class MatchManager {
-
-    public IGameMode gameMode;
-    public List<IGameEnd> gameEnd;
-    public List<IReward> reward;
-    public IEquipment equipment;
-    public IMatchScoreBoard matchScoreBoard;
-    public List<MapType> mapType;
-    public Map<Player, KillStreakData> killStreakDataMap = new HashMap<>();
+    public final GameModeEnum gameModeEnum;
+    public final GameModeHandler gameModeHandler;
+    public final IMatchScoreBoard matchScoreBoard;
+    @Getter
+    public final MatchData matchData;
     public Duration matchTime = null;
-    public MatchData matchData;
-
-
+    public final Map<Player, KillStreakData> killStreakDataMap = new HashMap<>();
     public String matchServer;
+    public BukkitTask readyMatchBroadCast;
 
-
-    public MatchManager(GameModeEnum gameModeEnum, IMatchScoreBoard scoreBoard){
-        this.gameMode = gameModeEnum.gameMode;
-        this.gameEnd = gameModeEnum.gameEnd;
-        this.reward = gameModeEnum.reward;
-        this.equipment = gameModeEnum.equipment;
-        this.mapType = gameModeEnum.mapType;
-        this.matchData = new MatchData(gameModeEnum);
+    public MatchManager(GameModeEnum gameModeEnum, IMatchScoreBoard scoreBoard) {
+        this.gameModeEnum = gameModeEnum;
+        this.gameModeHandler = gameModeEnum.handler;
         this.matchScoreBoard = scoreBoard;
+        this.matchData = new MatchData(gameModeEnum);
     }
 
-    public void startMapVote(){
-
+    public void startMapVote() {
+        // 未実装：マップ投票処理
     }
 
-    public void startMatch(){
-        gameMode.startMatch(this);
+    public void prepareMatch() {
+        gameModeHandler.prepareMatch(this);
     }
 
-    public void endMatch(){
+    public void startMatch() {
+        gameModeHandler.startMatch(this);
+    }
 
+    public void endMatch() {
+        gameModeHandler.endMatch(this);
+    }
 
-        //一番最後の処理
-        BukkitTask idleServer = new BukkitRunnable(){
-            @Override
-            public void run() {
-                RedisServerSettings redisServerSettings = LGWManager.getServerSettings();
-                redisServerSettings.setServerStatus(matchServer, true);
-            }
-        }.runTaskLater(LGWManager.INSTANCE, 10);
+    public List<IGameEnd> getGameEnd() {
+        return gameModeEnum.gameEnd;
+    }
+
+    public List<IReward> getRewards() {
+        return gameModeEnum.reward;
+    }
+
+    public IEquipment getEquipment() {
+        return gameModeEnum.equipment;
+    }
+
+    public List<MapType> getMapTypes() {
+        return gameModeEnum.mapType;
+    }
+    public void addPlayerInMatch(Player player) {
+        gameModeHandler.addPlayerInMatch(this, player);
     }
 }
