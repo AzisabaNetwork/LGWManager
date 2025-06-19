@@ -1,19 +1,24 @@
-package net.azisaba.lgw.lgwmanager.match.gamemode;
+package net.azisaba.lgw.lgwmanager.match.gamemode.gamemodehandler;
 
 import net.azisaba.lgw.lgwmanager.LGWManager;
+import net.azisaba.lgw.lgwmanager.api.scoreboard.ScoreBoardManager;
 import net.azisaba.lgw.lgwmanager.match.BattleTeam;
 import net.azisaba.lgw.lgwmanager.match.MatchManager;
 import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
 import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.TimerEnd;
 import net.azisaba.lgw.lgwmanager.task.ReadyMatchBroadCastTask;
+import net.azisaba.lgw.lgwmanager.util.LGWMUtill;
+import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
 import java.util.*;
+
+import static net.azisaba.lgw.lgwmanager.LGWManager.scoreboardLibrary;
 
 public interface GameModeHandler {
 
@@ -52,10 +57,15 @@ public interface GameModeHandler {
     }
 
     default void endMatch(MatchManager matchManager) {
-        matchManager.matchData.playing = false;
+
 
         // 試合終了時に全プレイヤーをロビーに戻すなどの処理
         for (Player player : matchManager.matchData.getPlayerList()) {
+            matchManager.matchData.playing = false;
+            Sidebar sidebar = scoreboardLibrary.createSidebar();
+            ScoreBoardManager normalBoard = new ScoreBoardManager(LGWManager.getINSTANCE(), sidebar);
+            sidebar.addPlayer(player);
+            LGWManager.playerScoreboardMap.put(player, normalBoard);
             player.sendMessage("試合終了です。ロビーに戻ります。");
             // ロビーへの移動処理があればここに記述
         }
@@ -77,7 +87,7 @@ public interface GameModeHandler {
     }
 
     default void addPlayerInMatch(MatchManager matchManager, Player player) {
-        matchManager.getMatchData().
+        matchManager.getMatchData().getPlayerList().add(player);
     }
 
 

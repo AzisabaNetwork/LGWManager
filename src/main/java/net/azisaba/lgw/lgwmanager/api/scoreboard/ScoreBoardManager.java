@@ -2,6 +2,7 @@ package net.azisaba.lgw.lgwmanager.api.scoreboard;
 
 import net.azisaba.lgw.lgwmanager.LGWManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ScoreBoardManager {
+public class ScoreBoardManager implements IMatchScoreBoard{
     private final Sidebar sidebar;
     private final ComponentSidebarLayout componentSidebar;
     private final SidebarAnimation<Component> titleAnimation;
@@ -63,12 +64,24 @@ public class ScoreBoardManager {
     }
 
     // Called every tick
+    @Override
     public void tick() {
-        // Advance title animation to the next frame
         titleAnimation.nextFrame();
 
-        // Update sidebar title & lines
-        componentSidebar.apply(sidebar);
+        EfficientSidebar efficient = new EfficientSidebar(sidebar);
+
+        // タイトル行描画
+        componentSidebar.titleComponent().draw(new EfficientSidebarDrawable(efficient) {
+            @Override
+            public void drawLine(@NotNull ComponentLike line) {
+                efficient.setTitle(line.asComponent());
+            }
+        });
+
+        // 本文行描画
+        EfficientSidebarDrawable body = new EfficientSidebarDrawable(efficient);
+        componentSidebar.linesComponent().draw(body);
+        body.clearRemaining();
     }
 
     private @NotNull SidebarAnimation<Component> createGradientAnimationGray(@NotNull Component text) {

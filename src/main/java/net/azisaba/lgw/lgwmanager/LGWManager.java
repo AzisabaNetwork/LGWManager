@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.azisaba.lgw.lgwmanager.api.RedisManager;
 import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
+import net.azisaba.lgw.lgwmanager.api.scoreboard.IMatchScoreBoard;
 import net.azisaba.lgw.lgwmanager.listener.LoginListener;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.ScoreBoardManager;
 import net.azisaba.lgw.lgwmanager.match.MatchManager;
@@ -18,10 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static dev.felnull.bettergui.BetterGUI.plugin;
 
@@ -45,6 +43,7 @@ public final class LGWManager extends JavaPlugin {
     public static EnumMap<MapType, List<MapData>> mapList;
     @Getter
     public static List<MatchManager> matchList = new ArrayList<>();
+    public static Map<Player, IMatchScoreBoard> playerScoreboardMap;
 
     @Override
     public void onEnable() {
@@ -54,6 +53,7 @@ public final class LGWManager extends JavaPlugin {
         serverName.addFirst(INSTANCE.getConfig().getString("ServerName", "server_dev"));
         saveDefaultConfig();
         initScoreboard();
+        initListener();
         serverSettings = new RedisServerSettings();
         serverSettings.setupServer();
     }
@@ -74,20 +74,26 @@ public final class LGWManager extends JavaPlugin {
             scoreboardLibrary = new NoopScoreboardLibrary();
             plugin.getLogger().warning("[LGWM]パケットアダプターの有効化に失敗しました");
         }
-        initListener();
-        sidebar = scoreboardLibrary.createSidebar();
-        ScoreBoardManager scoreBoardManager = new ScoreBoardManager(this, sidebar);
-        for(Player p : Bukkit.getOnlinePlayers()){
-            if(p.hasMetadata("NPC")){
-                continue;
-            }
-            sidebar.addPlayer(p);
+
+        // オンラインの全プレイヤーに Sidebar を設定
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasMetadata("NPC")) continue;
+
+            Sidebar sidebar = scoreboardLibrary.createSidebar(); // 個別に Sidebar を作成
+            ScoreBoardManager board = new ScoreBoardManager(this, sidebar); // 通常時の表示
+            sidebar.addPlayer(player);
+
+            // 登録（ここが重要！あとで match 用に差し替える時に使う）
+            playerScoreboardMap.put(player, board);
         }
-        //ScoreBoardのtick処理呼び出し
+
+        // tick 処理（すべての Scoreboard を更新）
         new BukkitRunnable() {
             @Override
             public void run() {
-                scoreBoardManager.tick();
+                for (IMatchScoreBoard scoreboard : playerScoreboardMap.values()) {
+                    scoreboard.tick();
+                }
             }
         }.runTaskTimer(this, 0, 2);
     }

@@ -2,12 +2,23 @@ package net.azisaba.lgw.lgwmanager.match.data;
 
 import lombok.Getter;
 import lombok.NonNull;
+import net.azisaba.lgw.lgwmanager.LGWManager;
+import net.azisaba.lgw.lgwmanager.api.scoreboard.DefaultMatchScoreBoardManager;
+import net.azisaba.lgw.lgwmanager.api.scoreboard.IMatchScoreBoard;
 import net.azisaba.lgw.lgwmanager.match.BattleTeam;
+import net.azisaba.lgw.lgwmanager.match.MatchManager;
 import net.azisaba.lgw.lgwmanager.match.gamemode.GameModeEnum;
+import net.kyori.adventure.text.Component;
+import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
+
+import static net.azisaba.lgw.lgwmanager.LGWManager.playerScoreboardMap;
+import static net.azisaba.lgw.lgwmanager.LGWManager.scoreboardLibrary;
 
 public class MatchData {
     public GameModeEnum gameMode;
@@ -17,14 +28,22 @@ public class MatchData {
     public EnumMap<BattleTeam, Integer> TeamPoint = new EnumMap<>(BattleTeam.class);
     public EnumMap<BattleTeam, Set<Player>> playerList = new EnumMap<>(BattleTeam.class);
     public MapData mapData;
-    public List<Player> readyPlayer = new ArrayList<>();
+    public List<Player> matchPlayer = new ArrayList<>();
     // スコアボードチーム
     private final Map<BattleTeam, Team> teams = new HashMap<>();
+    private MatchManager manager;
 
-    public MatchData(GameModeEnum gameMode){
+    public MatchData(GameModeEnum gameMode, MatchManager manager){
         this.gameMode = gameMode;
-        this.playerList.put(BattleTeam.RED, new HashSet<>());
-        this.playerList.put(BattleTeam.BLUE, new HashSet<>());
+        this.manager = manager;
+        for (BattleTeam battleTeam : gameMode.teamList){
+            this.playerList.put(battleTeam, new HashSet<>());
+        }
+    }
+
+
+    private IMatchScoreBoard getLibraryScoreboard(Player player) {
+        return playerScoreboardMap.get(player);
     }
 
     public Set<Player> getPlayerList() {
@@ -39,57 +58,49 @@ public class MatchData {
         return this.playerList.get(battleTeam);
     }
     public void addPlayer(Player player) {
-        if(!playing){
-            readyPlayer.add(player);
+        matchPlayer.add(player);
+        if(playing){
+            distributePlayer(player);
         }
 
     }
 
-    public void distributePlayers(List<Team> teams) {
+    public void initTeamDistribute(Set<BattleTeam> teams) {
         // plistをシャッフル
-        Collections.shuffle(readyPlayer);
+        Collections.shuffle(matchPlayer);
 
         // 均等に分ける
-        readyPlayer.forEach(player -> distributePlayer(player, teams));
+        matchPlayer.forEach(this::distributePlayer);
     }
 
-    public void distributePlayer(Player player, List<Team> teams) {
+    /*
+    チーム振り分け
+     */
+    public void distributePlayer(Player player) {
 
-        // エントリーが少ないチームにプレイヤーを追加 (同じ場合はポイントが少ない方、それでも同じなら最初の要素)
-        teams.stream()
-                .min(Comparator.comparing(Team::getSize).thenComparing(this::getCurrentTeamPoint))
-                .ifPresent(lowTeam -> lowTeam.addEntry(player.getName()));
-    }
-
-    public int getCurrentTeamPoint(@NonNull Team team) {
-        // battleTeamに変換
-        BattleTeam battleTeam = getBattleTeam(team);
-
-        // 変換失敗なら0を返す
-        if ( battleTeam == null ) {
-            return 0;
+        BattleTeam selectedTeam = playerList.keySet().stream()
+                .min(Comparator
+                        .comparing((BattleTeam team) -> playerList.get(team).size()) // ①人数の少なさ
+                        .thenComparing(team -> TeamPoint.getOrDefault(team, 0))      // ②ポイントの少なさ
+                )
+                .orElse(null);
+        if (selectedTeam != null) {
+            playerList.get(selectedTeam).add(player);
+            Sidebar sidebar = scoreboardLibrary.createSidebar();
+            DefaultMatchScoreBoardManager matchBoard = new DefaultMatchScoreBoardManager(LGWManager.getINSTANCE(), sidebar, manager);
+            sidebar.addPlayer(player);
+            playerScoreboardMap.put(player, matchBoard);
+        } else {
+            player.sendMessage("チームの振り分けに失敗したにゃ…");
+            //ここにロビーへ送り返す処理？
         }
+    }
 
+    public int getCurrentTeamPoint(@NonNull BattleTeam battleTeam) {
         // ポイントを取得、無ければ0
         return getTeamPoint().getOrDefault(battleTeam, 0);
     }
 
-    public BattleTeam getBattleTeam(Team team) {
-        // 各チームのプレイヤーリストを取得し、リスポーンするプレイヤーが含まれていればbreak
-        for ( BattleTeam battleTeam : BattleTeam.values() ) {
-
-            // スコアボードのTeamを取得
-            Team scoreboardTeam = getScoreboardTeam(battleTeam);
-
-            // 同じならreturn
-            if ( scoreboardTeam == team ) {
-                return battleTeam;
-            }
-        }
-
-        // 無ければnull
-        return null;
-    }
 
     public Team getScoreboardTeam(BattleTeam team) {
         return teams.getOrDefault(team, null);

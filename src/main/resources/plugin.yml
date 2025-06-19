@@ -2,3 +2,5 @@ name: LGWManager
 version: '${version}'
 main: net.azisaba.lgw.lgwmanager.LGWManager
 api-version: '1.16'
+depend:
+  - BetterGUI

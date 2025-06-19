@@ -1,24 +1,21 @@
 package net.azisaba.lgw.lgwmanager.match;
 
 import lombok.Getter;
-import net.azisaba.lgw.lgwmanager.LGWManager;
-import net.azisaba.lgw.lgwmanager.api.RedisServerSettings;
 import net.azisaba.lgw.lgwmanager.api.scoreboard.IMatchScoreBoard;
 import net.azisaba.lgw.lgwmanager.match.data.KillStreakData;
 import net.azisaba.lgw.lgwmanager.match.data.MatchData;
 import net.azisaba.lgw.lgwmanager.match.gamemode.*;
 import net.azisaba.lgw.lgwmanager.match.gamemode.equipment.IEquipment;
+import net.azisaba.lgw.lgwmanager.match.gamemode.gamemodehandler.GameModeHandler;
 import net.azisaba.lgw.lgwmanager.match.gamemode.gameend.IGameEnd;
 import net.azisaba.lgw.lgwmanager.match.gamemode.reward.IReward;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 public class MatchManager {
@@ -36,7 +33,7 @@ public class MatchManager {
         this.gameModeEnum = gameModeEnum;
         this.gameModeHandler = gameModeEnum.handler;
         this.matchScoreBoard = scoreBoard;
-        this.matchData = new MatchData(gameModeEnum);
+        this.matchData = new MatchData(gameModeEnum, this);
     }
 
     public void startMapVote() {

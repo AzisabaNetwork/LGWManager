@@ -1,8 +1,10 @@
 package net.azisaba.lgw.lgwmanager.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import java.util.*;
 
 public class LGWMUtill {
 
@@ -22,5 +24,39 @@ public class LGWMUtill {
 
         Collections.shuffle(numbers);
         return numbers.subList(0, count);
+    }
+
+    /**
+     * UUIDからオンラインのプレイヤーを安全に取得します。
+     * オンラインでなければ空のOptionalを返します。
+     */
+    public static Optional<Player> getOnlinePlayer(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        return (player != null && player.isOnline()) ? Optional.of(player) : Optional.empty();
+    }
+
+    public static Player getOnlinePlayerOrNull(UUID uuid) {
+        return getOnlinePlayer(uuid).orElse(null);
+    }
+
+    /**
+     * UUIDからプレイヤー名を取得します。
+     * オンラインでなければOfflinePlayerから取得します。
+     */
+    public static String getPlayerName(UUID uuid) {
+        Player online = Bukkit.getPlayer(uuid);
+        if (online != null && online.isOnline()) {
+            return online.getName();
+        }
+        OfflinePlayer offline = Bukkit.getOfflinePlayer(uuid);
+        return offline.getName() != null ? offline.getName() : "Unknown";
+    }
+
+    /**
+     * UUIDがオンラインか確認するだけのヘルパー
+     */
+    public static boolean isOnline(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        return player != null && player.isOnline();
     }
 }
