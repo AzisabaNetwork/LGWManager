@@ -23,24 +23,20 @@ public class RedisManager {
         FileConfiguration config = LGWManager.INSTANCE.getConfig();
         Logger logger = Bukkit.getLogger();
         dbGroup = config.getString("Redis.databaseGroup", "lgwm");
-        String hostName = config.getString("Redis.IP", "localhost");
+        String hostName = config.getString("Redis.IP", "localhost").trim();
         int hostPort = config.getInt("Redis.Port", 6379);
         String userName = config.getString("Redis.user", null);
         CharSequence userPass = config.getString("Redis.password", null);
-        RedisURI redisURI;
-
-        if(userName != null && userPass != null ){
-            redisURI = RedisURI.Builder.redis(hostName, hostPort)
-                    .withAuthentication(userName, userPass)
-                    .build();
-        } else if(userPass != null){
-            redisURI = RedisURI.Builder.redis(hostName, hostPort)
-                    .withPassword(userPass)
-                    .build();
-        }else {
-            redisURI = RedisURI.Builder.redis(hostName, hostPort)
-                    .build();
+        String uri;
+        if (userName != null && userPass != null) {
+            uri = "redis://" + userName + ":" + userPass + "@" + hostName + ":" + hostPort;
+        } else if (userPass != null) {
+            uri = "redis://:" + userPass + "@" + hostName + ":" + hostPort;
+        } else {
+            uri = "redis://" + hostName + ":" + hostPort;
         }
+
+        RedisURI redisURI = RedisURI.create(uri);
 
         try {
             this.redisClient = RedisClient.create(redisURI);
@@ -49,7 +45,9 @@ public class RedisManager {
             logger.info("[LGWM]Redisへの接続に成功しました");
         } catch (RedisConnectionException e) {
             logger.warning("[LGWM]Redis接続失敗: " + e.getMessage());
+            logger.info("Connecting to Redis at: " + redisURI.toURI());
             isTrue = false;
+            this.connection = null;
         }
     }
 

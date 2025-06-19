@@ -1,7 +1,7 @@
 # Redisの接続情報
 Redis:
   IP: "localhost"
-  Port: "6379"
+  Port: 6379
   user: null
   password: null
   databaseGroup: "lgwm"

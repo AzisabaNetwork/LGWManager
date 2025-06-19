@@ -3,12 +3,11 @@ package net.azisaba.lgw.lgwmanager.api.scoreboard;
 import net.azisaba.lgw.lgwmanager.LGWManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
 import net.megavex.scoreboardlibrary.api.sidebar.component.ComponentSidebarLayout;
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent;
@@ -85,15 +84,28 @@ public class ScoreBoardManager implements IMatchScoreBoard{
     }
 
     private @NotNull SidebarAnimation<Component> createGradientAnimationGray(@NotNull Component text) {
-        float step = 1f / 32f;
+        String content = ((TextComponent) text).content();
+        List<Component> frames = new ArrayList<>();
 
-        TagResolver.Single textPlaceholder = Placeholder.component("text", text);
-        List<Component> frames = new ArrayList<>((int) (2f / step));
+        int totalFrames = 32;
+        for (int frame = 0; frame < totalFrames; frame++) {
+            float shift = (float) frame / totalFrames;
+            Component combined = Component.empty();
 
-        float phase = -1f;
-        while (phase < 1) {
-            frames.add(MiniMessage.miniMessage().deserialize("<gradient:white:gray:" + phase + "><text>", textPlaceholder));
-            phase += step;
+            for (int i = 0; i < content.length(); i++) {
+                char c = content.charAt(i);
+                float ratio = (float) i / content.length();
+                float brightness = (ratio + shift) % 1f;
+
+                int value = (int) (255 - brightness * 128); // 255→127
+                if (value < 127) value = 127;
+
+                TextColor color = TextColor.color(value, value, value);
+                Component letter = Component.text(c, color, TextDecoration.BOLD);
+                combined = combined.append(letter);
+            }
+
+            frames.add(combined);
         }
 
         return new CollectionSidebarAnimation<>(frames);

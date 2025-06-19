@@ -43,7 +43,7 @@ public final class LGWManager extends JavaPlugin {
     public static EnumMap<MapType, List<MapData>> mapList;
     @Getter
     public static List<MatchManager> matchList = new ArrayList<>();
-    public static Map<Player, IMatchScoreBoard> playerScoreboardMap;
+    public static Map<Player, IMatchScoreBoard> playerScoreboardMap = new HashMap<>();
 
     @Override
     public void onEnable() {
